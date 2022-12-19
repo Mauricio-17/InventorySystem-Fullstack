@@ -1,24 +1,24 @@
 package com.mauricio.inventory.typeowner;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "type_owner")
+@AllArgsConstructor
+@NoArgsConstructor
 public class TypeOwner {
 
     @Id
-    @SequenceGenerator(
-            name = "type_sequence",
-            sequenceName = "type_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "type_sequence"
+            strategy = IDENTITY
     )
     @Column(
             name = "id"
@@ -31,6 +31,7 @@ public class TypeOwner {
     @Size(max = 200)
     private String description;
 
+    
     public Long getId() {
         return id;
     }

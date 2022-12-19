@@ -1,5 +1,9 @@
 package com.mauricio.inventory.equipment;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mauricio.inventory.AuditModel;
 import com.mauricio.inventory.brand.Brand;
 import com.mauricio.inventory.category.Category;
@@ -7,6 +11,12 @@ import com.mauricio.inventory.location.Location;
 import com.mauricio.inventory.owner.Owner;
 import com.mauricio.inventory.shelf.Shelf;
 import com.mauricio.inventory.transaction.Transaction;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -16,160 +26,74 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.GenerationType.SEQUENCE;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "equipment")
 public class Equipment extends AuditModel {
 
+    private static final long serialVersionUID = 1L;
     @Id
-    @SequenceGenerator(
-            name = "equipment_sequence",
-            sequenceName = "equipment_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "equipment_sequence"
+            strategy = IDENTITY
     )
     @Column(
             name = "id"
     )
     private Long id;
+
     @Size(max = 15)
     @NotBlank
     @Column(nullable = false, unique = true)
     private String sku;
+
     @Size(max = 15)
-    @NotBlank
+    @NotBlank(message = "El campo NOMBRE no debe estar vacio")
     @Column(nullable = false, unique = true)
     private String name;
-    @NotBlank
+
+    @NotNull(message = "El campo STOCK no debe estar vacio")
     @Column(nullable = false)
     private int stock;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
 
 
-    @ManyToOne
-    @JoinColumn(
-            name = "owner_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "owner_equipment_fk"
-            )
-    )
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "owner_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Owner owner;
-    @ManyToOne
-    @JoinColumn(
-            name = "category_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "category_equipment_fk"
-            )
-    )
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Category category;
-    @ManyToOne
-    @JoinColumn(
-            name = "brand_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "brand_equipment_fk"
-            )
-    )
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "brand_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Brand brand;
-    @ManyToOne
-    @JoinColumn(
-            name = "location_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "location_equipment_fk"
-            )
-    )
-    private Location location;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "location_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Location location; // Unidirectional relationship
 
     @OneToMany(
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            cascade = CascadeType.ALL,
             mappedBy = "equipment"
     )
     private List<Transaction> transactions;
 
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getSku() {
-        return sku;
-    }
-
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public Owner getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Owner owner) {
-        this.owner = owner;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Brand getBrand() {
-        return brand;
-    }
-
-    public void setBrand(Brand brand) {
-        this.brand = brand;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setShelf(Location location) {
-        this.location = location;
-    }
-
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
 }

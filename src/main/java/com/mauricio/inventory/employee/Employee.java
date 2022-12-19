@@ -1,8 +1,14 @@
 package com.mauricio.inventory.employee;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mauricio.inventory.AuditModel;
 import com.mauricio.inventory.area.Area;
 import com.mauricio.inventory.role.Role;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -10,79 +16,57 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import static javax.persistence.GenerationType.SEQUENCE;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "employee")
-public class Employee extends AuditModel {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Employee extends AuditModel{
+
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(
-            name = "employee_sequence",
-            sequenceName = "employee_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "employee_sequence"
+            strategy = IDENTITY
     )
     @Column(
             name = "id"
     )
     private Long id;
-    @Size(max = 80)
     @NotBlank
+    @Size(max = 80)
     @Column(nullable = false)
     private String name;
     @Size(max = 80)
     private String lastName;
+    @Email
+    @Column(nullable = false, unique = true)
+    private String email;
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
-    @Email(message = "Invalid email")
-    @Column(nullable = false, unique = true)
-    private String email;
     @NotBlank
     @Column(nullable = false, unique = true)
     private String password;
-
-
-    @ManyToOne
-    @JoinColumn(
-            name = "role_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "role_employee_fk"
-            )
-    )
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "role_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private Role role;
-    @ManyToOne
-    @JoinColumn(
-            name = "area_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "area_employee_fk"
-            )
-    )
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "area_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Area area;
 
-    public Employee(String name, String lastName, Status status, String email, String password,
-                    Role role, Area area)
-    {
-        this.name = name;
-        this.lastName = lastName;
-        this.status = status;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.area = area;
+
+    public Long getId() {
+        return id;
     }
 
-    public Long getId(){
-        return this.id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -101,20 +85,19 @@ public class Employee extends AuditModel {
         this.lastName = lastName;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public String getPassword() {
@@ -140,4 +123,6 @@ public class Employee extends AuditModel {
     public void setArea(Area area) {
         this.area = area;
     }
+
+
 }

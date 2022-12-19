@@ -13,11 +13,11 @@ public class AreaService {
 
     private AreaRepository areaRepository;
 
-    public List<Area> getAllAreas(){
+    public List<Area> getAllItems(){
         return areaRepository.findAll();
     }
 
-    public void addArea(Area area){
+    public void addItem(Area area){
         String name = area.getName();
         if (areaRepository.existsName(name)){
             throw new BadRequestException(String.format("El nombre {%s} ya existe",name));
@@ -25,14 +25,25 @@ public class AreaService {
         areaRepository.save(area);
     }
 
+    public Area getItem(Long id){
+        Area area = areaRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException(String.format("Area con el ID %s no encontrada", id))
+        );
+        return area;
+    }
+
     public void removeArea(Long id) {
         Area area = areaRepository.findById(id).orElseThrow(() ->
             new ResourceNotFoundException(String.format("Area con el ID %s no encontrada", id))
         );
-        areaRepository.save(area);
+        areaRepository.delete(area);
     }
 
-    public void update(Area area, Long id){
+    public void updateItem(Area area, Long id){
+        String name = area.getName();
+        if (areaRepository.existsName(name)){
+            throw new BadRequestException(String.format("El nombre {%s} ya existe",name));
+        }
         Area foundArea = areaRepository.findById(id).orElseThrow(() ->
             new ResourceNotFoundException(String.format("Area con el ID %s no encontrada", id))
         );

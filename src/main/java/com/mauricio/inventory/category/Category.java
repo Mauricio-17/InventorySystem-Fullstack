@@ -1,30 +1,28 @@
 package com.mauricio.inventory.category;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mauricio.inventory.equipment.Equipment;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Set;
 
+import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "category")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category {
 
     @Id
-    @SequenceGenerator(
-            name = "category_sequence",
-            sequenceName = "category_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "category_sequence"
-    )
-    @Column(
-            name = "id"
+            strategy = IDENTITY
     )
     private Long id;
     @Size(max = 80)
@@ -35,17 +33,11 @@ public class Category {
     private String description;
     @OneToMany(
             mappedBy = "category",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            cascade = CascadeType.ALL
     )
-    private List<Equipment> equipments;
+    private Set<Equipment> equipments;
 
-    public Category(String name, String description, List<Equipment> equipments) {
-        this.name = name;
-        this.description = description;
-        this.equipments = equipments;
-    }
+
 
     public Long getId(){
         return this.id;
@@ -67,7 +59,7 @@ public class Category {
         this.description = description;
     }
 
-    public List<Equipment> getEquipments() {
+    public Set<Equipment> getEquipments() {
         return equipments;
     }
     public void setEquipments(List<Equipment> list){

@@ -1,24 +1,24 @@
 package com.mauricio.inventory.role;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "role")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Role {
 
     @Id
-    @SequenceGenerator(
-            name = "role_sequence",
-            sequenceName = "role_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "role_sequence"
+            strategy = IDENTITY
     )
     @Column(
             name = "id"
@@ -31,10 +31,6 @@ public class Role {
     @Size(max = 200)
     private String description;
 
-    public Role(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
 
     public Long getId(){
         return this.id;

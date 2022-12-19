@@ -1,32 +1,36 @@
 package com.mauricio.inventory.owner;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mauricio.inventory.AuditModel;
 import com.mauricio.inventory.equipment.Equipment;
 import com.mauricio.inventory.typeowner.TypeOwner;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import static javax.persistence.GenerationType.SEQUENCE;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "owner")
-public class Owner extends AuditModel {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Owner extends AuditModel{
 
+    private static final long serialVersionUID = 1L;
     @Id
-    @SequenceGenerator(
-            name = "owner_sequence",
-            sequenceName = "owner_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "owner_sequence"
+            strategy = IDENTITY
     )
     @Column(
             name = "id"
@@ -43,26 +47,21 @@ public class Owner extends AuditModel {
     @Email
     @Column(nullable = false, unique = true)
     private String email;
+    @NotBlank
     @Size(max = 10)
+    @Column(nullable = false, unique = true)
     private String dni;
 
-    @ManyToOne
-    @JoinColumn(
-            name = "type_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "type_owner_fk"
-            )
-    )
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "type_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private TypeOwner typeOwner;
     @OneToMany(
             mappedBy = "owner",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            cascade = CascadeType.ALL, fetch = FetchType.LAZY
     )
-    private List<Equipment> equipments;
+    private Set<Equipment> equipments = new HashSet<>();
 
 
     public Long getId() {
@@ -117,11 +116,11 @@ public class Owner extends AuditModel {
         this.typeOwner = typeOwner;
     }
 
-    public List<Equipment> getEquipments() {
+    public Set<Equipment> getEquipments() {
         return equipments;
     }
 
-    public void setEquipments(List<Equipment> equipments) {
+    public void setEquipments(Set<Equipment> equipments) {
         for(Equipment eq : equipments){
             this.equipments.add(eq);
         }

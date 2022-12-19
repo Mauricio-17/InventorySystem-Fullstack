@@ -1,24 +1,24 @@
 package com.mauricio.inventory.brand;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "brand")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Brand {
 
     @Id
-    @SequenceGenerator(
-            name = "brand_sequence",
-            sequenceName = "brand_sequence",
-            allocationSize = 1
-    )
     @GeneratedValue(
-            strategy = SEQUENCE,
-            generator = "brand_sequence"
+            strategy = IDENTITY
     )
     @Column(
             name = "id"
@@ -29,7 +29,7 @@ public class Brand {
     @NotBlank
     @Column(nullable = false, unique = true)
     private String name;
-    @Size(max = 15)
+    @Size(max = 30, message = "Nombre muy largo para un país")
     private String country;
 
 
