@@ -1,6 +1,6 @@
 package com.mauricio.inventory.employee;
 
-import com.mauricio.inventory.category.Category;
+import com.mauricio.inventory.views.CompletedEmployee;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +21,16 @@ public class EmployeeController {
         return employeeService.getAllItems();
     }
 
+    @GetMapping("/{id}")
+    public Employee getEquipment(@PathVariable(value = "id") Long id){
+        return employeeService.getItem(id);
+    }
+
+    @GetMapping("/employee/view")
+    public List<CompletedEmployee> getAllCompletedEmployees(){
+        return employeeService.getAllCompletedEmployees();
+    }
+
     @PostMapping("/role/{roleId}/employee")
     public ResponseEntity<Void> addEmployee(@Valid @RequestBody Employee employee,
                                       @PathVariable(value = "roleId") Long roleId){
@@ -28,13 +38,13 @@ public class EmployeeController {
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/employee/{id}")
     public ResponseEntity<Void> updateEmployee(@Valid @RequestBody Employee employee, @PathVariable(value = "id") Long id){
         employeeService.updateItem(employee, id);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/employee/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "id") Long id){
         employeeService.removeItem(id);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);

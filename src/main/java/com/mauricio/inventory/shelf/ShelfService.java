@@ -2,6 +2,8 @@ package com.mauricio.inventory.shelf;
 
 import com.mauricio.inventory.exceptions.BadRequestException;
 import com.mauricio.inventory.exceptions.ResourceNotFoundException;
+import com.mauricio.inventory.location.Location;
+import com.mauricio.inventory.location.LocationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +15,15 @@ import java.util.Optional;
 public class ShelfService {
 
     private ShelfRepository shelfRepository;
+    private LocationRepository locationRepository;
 
     public List<Shelf> getAllItems(){
         return shelfRepository.findAll();
+    }
+
+    public Shelf getShelfByLocationId(Long id){
+        Optional<Location> foundLocation = locationRepository.findById(id);
+        return foundLocation.map(Location::getShelf).orElse(null);
     }
 
     public void addItem(Shelf shelf){

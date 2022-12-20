@@ -5,6 +5,8 @@ import com.mauricio.inventory.area.AreaRepository;
 import com.mauricio.inventory.exceptions.BadRequestException;
 import com.mauricio.inventory.exceptions.ResourceNotFoundException;
 import com.mauricio.inventory.role.RoleRepository;
+import com.mauricio.inventory.views.CompletedEmployee;
+import com.mauricio.inventory.views.CompletedEmployeeRepository;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final AreaRepository areaRepository;
     private final RoleRepository roleRepository;
+    private final CompletedEmployeeRepository completedEmployeeRepository;
 
     public void dataValidation(Employee employee){
         Optional<Area> area = areaRepository.findById(employee.getArea().getId());
@@ -35,6 +38,10 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
+    public List<CompletedEmployee> getAllCompletedEmployees(){
+        return (List<CompletedEmployee>) completedEmployeeRepository.findAll();
+    }
+
     public Employee getItem(Long id){
         Employee foundEmployee = employeeRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException(String.format("Empleado con el ID %s no encontrada", id))
@@ -44,7 +51,7 @@ public class EmployeeService {
     public void addItem(Employee employee, Long roleId){
         // Hashing the password
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-        String hash =argon2.hash(1, 1024, 1, employee.getPassword().getBytes());
+        String hash = argon2.hash(1, 1024, 1, employee.getPassword().getBytes());
         employee.setPassword(hash);
 
         dataValidation(employee);

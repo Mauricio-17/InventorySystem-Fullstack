@@ -38,6 +38,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 public class Equipment extends AuditModel {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(
             strategy = IDENTITY
@@ -83,10 +84,11 @@ public class Equipment extends AuditModel {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Brand brand;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne// if it puts Fetch.Lazy may cause an error
     @JoinColumn(name = "location_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    //@JsonBackReference the same result
     private Location location; // Unidirectional relationship
 
     @OneToMany(

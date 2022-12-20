@@ -21,6 +21,11 @@ public class LocationController {
         return locationService.getAllItems();
     }
 
+    @GetMapping("/shelf/{id}")
+    public List<Location> getItemsByShelfId(@PathVariable(value = "id") Long id){
+        return locationService.getItemsByForeignId(id);
+    }
+
     @PostMapping
     public ResponseEntity<Void> addLocation(@Valid @RequestBody Location location){
         locationService.addItem(location);

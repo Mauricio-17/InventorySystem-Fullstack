@@ -12,7 +12,6 @@ import com.mauricio.inventory.location.Status;
 import com.mauricio.inventory.owner.Owner;
 import com.mauricio.inventory.owner.OwnerRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,15 +61,16 @@ public class EquipmentService {
         }
     }
 
-    public List<Equipment> getAllItems(){
-        return equipmentRepository.findAll();
+    public List<Equipment> getAllItems( ){
+        return equipmentRepository.findAll( );
     }
 
     public Equipment getItem(Long id){
-        Equipment foundEquipment = equipmentRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException(String.format("Equipo con el ID %s no encontrada", id))
-        );
-        return foundEquipment;
+        Optional<Equipment> foundEquipment = equipmentRepository.findById(id);
+        if(foundEquipment.isEmpty()){
+            return null;
+        }
+        return foundEquipment.get();
     }
 
     public void addItem(Equipment equipment){

@@ -1,5 +1,6 @@
 package com.mauricio.inventory.shelf;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mauricio.inventory.location.Location;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -41,6 +42,7 @@ public class Shelf {
             cascade = CascadeType.ALL,
             mappedBy = "shelf"
     )
+    //@JsonManagedReference
     private List<Location> locations = new ArrayList<>();
 
 

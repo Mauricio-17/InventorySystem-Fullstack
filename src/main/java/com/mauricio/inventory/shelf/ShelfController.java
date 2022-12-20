@@ -21,6 +21,11 @@ public class ShelfController {
         return shelfService.getAllItems();
     }
 
+    @GetMapping("/location/{id}")
+    public Shelf getShelfByLocationId(@PathVariable(value = "id") Long locationId){
+        return shelfService.getShelfByLocationId(locationId);
+    }
+
     @PostMapping
     public ResponseEntity<Void> addShelf(@Valid @RequestBody Shelf shelf){
         shelfService.addItem(shelf);

@@ -6,7 +6,9 @@ import com.mauricio.inventory.AuditModel;
 import com.mauricio.inventory.area.Area;
 import com.mauricio.inventory.role.Role;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -22,6 +24,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "employee")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Employee extends AuditModel{
 
     private static final long serialVersionUID = 1L;
@@ -60,69 +64,6 @@ public class Employee extends AuditModel{
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Area area;
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Area getArea() {
-        return area;
-    }
-
-    public void setArea(Area area) {
-        this.area = area;
-    }
 
 
 }

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,6 +36,14 @@ public class LocationService {
 
     public List<Location> getAllItems(){
         return locationRepository.findAll();
+    }
+
+    public List<Location> getItemsByForeignId(Long shelfId){
+        Optional<Shelf> foundShelf = shelfRepository.findById(shelfId);
+        if (foundShelf.isPresent() && !foundShelf.get().getLocations().isEmpty()){
+            return foundShelf.get().getLocations();
+        }
+        return new ArrayList<>();
     }
 
     public void addItem(Location location){

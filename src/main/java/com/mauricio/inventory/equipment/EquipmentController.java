@@ -2,6 +2,8 @@ package com.mauricio.inventory.equipment;
 
 import com.mauricio.inventory.category.Category;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +19,13 @@ public class EquipmentController {
     private EquipmentService equipmentService;
 
     @GetMapping
-    public List<Equipment> getAllEquipments(){
-        return equipmentService.getAllItems();
+    public List<Equipment> getAllEquipments( ){
+        return equipmentService.getAllItems( );
+    }
+
+    @GetMapping("/{id}")
+    public Equipment getEquipment(@PathVariable(value = "id") Long id){
+        return equipmentService.getItem(id);
     }
 
     @PostMapping
