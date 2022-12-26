@@ -11,6 +11,8 @@ import com.mauricio.inventory.location.LocationRepository;
 import com.mauricio.inventory.location.Status;
 import com.mauricio.inventory.owner.Owner;
 import com.mauricio.inventory.owner.OwnerRepository;
+import com.mauricio.inventory.views.CompletedEquipment;
+import com.mauricio.inventory.views.CompletedEquipmentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class EquipmentService {
     private OwnerRepository ownerRepository;
     private BrandRepository brandRepository;
     private LocationRepository locationRepository;
+    private CompletedEquipmentRepository completedEquipmentRepository;
 
     /*public void foreignDataValidation
             (JpaRepository category, JpaRepository owner, JpaRepository brand, JpaRepository location, Long id){
@@ -65,6 +68,9 @@ public class EquipmentService {
         return equipmentRepository.findAll( );
     }
 
+    public List<CompletedEquipment> getAllCompletedEquipments(){
+        return completedEquipmentRepository.findAll();
+    }
     public Equipment getItem(Long id){
         Optional<Equipment> foundEquipment = equipmentRepository.findById(id);
         if(foundEquipment.isEmpty()){

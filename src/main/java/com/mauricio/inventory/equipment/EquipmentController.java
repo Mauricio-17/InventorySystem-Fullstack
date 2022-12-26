@@ -1,6 +1,7 @@
 package com.mauricio.inventory.equipment;
 
 import com.mauricio.inventory.category.Category;
+import com.mauricio.inventory.views.CompletedEquipment;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,11 @@ public class EquipmentController {
     @GetMapping
     public List<Equipment> getAllEquipments( ){
         return equipmentService.getAllItems( );
+    }
+
+    @GetMapping("/view")
+    public List<CompletedEquipment> getAllCompletedEquipments(){
+        return equipmentService.getAllCompletedEquipments();
     }
 
     @GetMapping("/{id}")

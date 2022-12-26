@@ -4,6 +4,7 @@ import com.mauricio.inventory.area.Area;
 import com.mauricio.inventory.area.AreaRepository;
 import com.mauricio.inventory.exceptions.BadRequestException;
 import com.mauricio.inventory.exceptions.ResourceNotFoundException;
+import com.mauricio.inventory.role.Role;
 import com.mauricio.inventory.role.RoleRepository;
 import com.mauricio.inventory.views.CompletedEmployee;
 import com.mauricio.inventory.views.CompletedEmployeeRepository;
@@ -29,6 +30,10 @@ public class EmployeeService {
         if(area.isEmpty()){
             throw new BadRequestException("Dato del Área inválido");
         }
+        Optional<Role> role = roleRepository.findById(employee.getRole().getId());
+        if(role.isEmpty()){
+            throw new BadRequestException("Dato del Rol inválido");
+        }
         if(employeeRepository.existsEmail(employee.getEmail())){
             throw new BadRequestException("La contraseña o el email ya se encuentran registrados");
         }
@@ -36,6 +41,20 @@ public class EmployeeService {
 
     public List<Employee> getAllItems(){
         return employeeRepository.findAll();
+    }
+
+    public CompletedEmployee getEmployeeByCredentials(Employee employee){
+        String email = employee.getEmail();
+        Optional<CompletedEmployee> emp = Optional.ofNullable(completedEmployeeRepository.findByEmail(email));
+        if (emp.isPresent()){
+            String hashedPassword = emp.get().getPassword();
+            Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+            // Revisando si ambas contraseñas coinciden
+            if(argon2.verify(hashedPassword, employee.getPassword().getBytes())){
+                return emp.get();
+            }
+        }
+        throw new ResourceNotFoundException("Email o contraseña inválido");
     }
 
     public List<CompletedEmployee> getAllCompletedEmployees(){
@@ -48,19 +67,14 @@ public class EmployeeService {
         );
         return foundEmployee;
     }
-    public void addItem(Employee employee, Long roleId){
+    public void addItem(Employee employee){
         // Hashing the password
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
         String hash = argon2.hash(1, 1024, 1, employee.getPassword().getBytes());
         employee.setPassword(hash);
 
         dataValidation(employee);
-        roleRepository.findById(roleId).map(role -> {
-           employee.setRole(role);
-           return employeeRepository.save(employee);
-        }).orElseThrow(() ->
-                new BadRequestException("Dato del Área inválido")
-        );
+        employeeRepository.save(employee);
     }
 
     public void updateItem(Employee employee, Long id){
@@ -69,7 +83,6 @@ public class EmployeeService {
             emp.setName(employee.getName());
             emp.setLastName(employee.getLastName());
             emp.setStatus(employee.getStatus());
-            emp.setPassword(employee.getPassword());
             emp.setEmail(employee.getEmail());
             emp.setArea(employee.getArea());
             emp.setRole(employee.getRole());

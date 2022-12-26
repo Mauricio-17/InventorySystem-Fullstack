@@ -1,6 +1,7 @@
 package com.mauricio.inventory.category;
 
 import com.mauricio.inventory.exceptions.BadRequestException;
+import com.mauricio.inventory.exceptions.ConflictingRequestException;
 import com.mauricio.inventory.exceptions.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,9 @@ public class CategoryService {
         Category foundCategory = categoryRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException(String.format("Categoria con el ID %s no encontrada", id))
         );
+        if ( !foundCategory.getEquipments().isEmpty()){
+            throw new ConflictingRequestException("Existe información de equipos que dependen de éste.");
+        }
         categoryRepository.delete(foundCategory);
     }
 }

@@ -51,13 +51,13 @@ public class Employee extends AuditModel{
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
-    @NotBlank
+
     @Column(nullable = false, unique = true)
     private String password;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Role role;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "area_id")
