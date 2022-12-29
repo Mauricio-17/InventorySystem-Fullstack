@@ -17,25 +17,25 @@ public class TypeController {
     private TypeService typeService;
 
     @GetMapping
-    public List<TypeOwner> getAllTypes(){
-        return typeService.getAllTypes();
+    public List<TypeOwner> getAllTypes(@RequestHeader(value = "Authorization") String token){
+        return typeService.getAllTypes(token);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addTypeOwner(@Valid @RequestBody TypeOwner typeOwner){
-        typeService.addType(typeOwner);
+    public ResponseEntity<Void> addTypeOwner(@Valid @RequestBody TypeOwner typeOwner, @RequestHeader(value = "Authorization") String token){
+        typeService.addType(typeOwner, token);
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateType(@Valid @RequestBody TypeOwner type, @PathVariable(value = "id") Long id){
-        typeService.updateItem(type, id);
+    public ResponseEntity<Void> updateType(@Valid @RequestBody TypeOwner type, @PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        typeService.updateItem(type, id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteType(@PathVariable(value = "id") Long id){
-        typeService.removeItem(id);
+    public ResponseEntity<Void> deleteType(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        typeService.removeItem(id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 

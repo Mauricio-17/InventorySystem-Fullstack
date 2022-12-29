@@ -16,25 +16,25 @@ public class BrandController {
     private BrandService brandService;
 
     @GetMapping
-    public List<Brand> getAllBrands(){
-        return brandService.getAllItems();
+    public List<Brand> getAllBrands( @RequestHeader(value = "Authorization") String token){
+        return brandService.getAllItems(token);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addBrand(@Valid @RequestBody Brand brand){
-        brandService.addItem(brand);
+    public ResponseEntity<Void> addBrand(@Valid @RequestBody Brand brand,  @RequestHeader(value = "Authorization") String token){
+        brandService.addItem(brand, token);
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateBrand(@Valid @RequestBody Brand brand, @PathVariable(value = "id") Long id){
-        brandService.updateItem(brand, id);
+    public ResponseEntity<Void> updateBrand(@Valid @RequestBody Brand brand, @PathVariable(value = "id") Long id,  @RequestHeader(value = "Authorization") String token){
+        brandService.updateItem(brand, id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeBrand(@PathVariable(value = "id") Long id){
-        brandService.removeItem(id);
+    public ResponseEntity<Void> removeBrand(@PathVariable(value = "id") Long id,  @RequestHeader(value = "Authorization") String token){
+        brandService.removeItem(id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

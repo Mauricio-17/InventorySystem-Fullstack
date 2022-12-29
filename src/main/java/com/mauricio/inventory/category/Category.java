@@ -26,7 +26,7 @@ public class Category {
     )
     private Long id;
     @Size(max = 80)
-    @NotBlank
+    @NotBlank(message = "Nombre requerido!")
     @Column(nullable = false, unique = true)
     private String name;
     @Size(max = 200)

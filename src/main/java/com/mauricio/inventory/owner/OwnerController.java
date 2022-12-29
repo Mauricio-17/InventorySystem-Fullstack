@@ -16,25 +16,25 @@ public class OwnerController {
     private OwnerService ownerService;
 
     @GetMapping
-    public List<Owner> getAllOwners(){
-        return ownerService.getAllOwners();
+    public List<Owner> getAllOwners(@RequestHeader(value = "Authorization") String token){
+        return ownerService.getAllOwners(token);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addOwner(@Valid @RequestBody Owner owner){
-        ownerService.addItem(owner);
-        return new ResponseEntity<Void>(HttpStatus.CREATED);
+    public ResponseEntity<Void> addOwner(@Valid @RequestBody Owner owner, @RequestHeader(value = "Authorization") String token){
+        ownerService.addItem(owner, token);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateOwner(@Valid @RequestBody Owner owner, @PathVariable(value = "id") Long id){
-        ownerService.updateItem(owner, id);
+    public ResponseEntity<Void> updateOwner(@Valid @RequestBody Owner owner, @PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        ownerService.updateItem(owner, id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOwner(@PathVariable(value = "id") Long id){
-        ownerService.removeItem(id);
+    public ResponseEntity<Void> deleteOwner(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        ownerService.removeItem(id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

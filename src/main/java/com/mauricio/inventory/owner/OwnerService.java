@@ -1,7 +1,9 @@
 package com.mauricio.inventory.owner;
 
+import com.mauricio.inventory.auth.JWTUtil;
 import com.mauricio.inventory.exceptions.BadRequestException;
 import com.mauricio.inventory.exceptions.ResourceNotFoundException;
+import com.mauricio.inventory.exceptions.UnauthorizedRequestException;
 import com.mauricio.inventory.typeowner.TypeOwner;
 import com.mauricio.inventory.typeowner.TypeOwnerRepository;
 import lombok.AllArgsConstructor;
@@ -18,32 +20,45 @@ public class OwnerService {
 
     private OwnerRepository ownerRepository;
     private TypeOwnerRepository typeOwnerRepository;
+    private final JWTUtil jwtUtil;
+    private String tokenValidation(String token){
+        String employeeId = jwtUtil.getKey(token);
+        if(employeeId == null || employeeId.equals("")){
+            throw new UnauthorizedRequestException("Sin Autorización");
+        }
+        return jwtUtil.getValue(token);
+    }
 
     public void dataValidation(String dni, String email, Long typeId){
-        if (ownerRepository.existsDni(dni) || ownerRepository.existsEmail(email)){
-            throw new BadRequestException("El DNI o el email ya están registrados");
-        }
+
         Optional<TypeOwner> typeOwner = typeOwnerRepository.findById(typeId);
         if (!typeOwner.isPresent()){
             throw new BadRequestException("El ID del Tipo Propietario no está registrado");
         }
     }
 
-    public List<Owner> getAllOwners(){
+    public List<Owner> getAllOwners(String token){
+        tokenValidation(token);
         return ownerRepository.findAll();
     }
 
 
-    public void addItem(Owner owner){
+    public void addItem(Owner owner, String token){
+        tokenValidation(token);
+
         if(owner.getTypeOwner() == null){
             log.info("No existe");
             return;
+        }
+        if (ownerRepository.existsDni(owner.getDni()) || ownerRepository.existsEmail(owner.getEmail())){
+            throw new BadRequestException("El DNI o el email ya están registrados");
         }
         dataValidation(owner.getDni(), owner.getEmail(), owner.getTypeOwner().getId());
         ownerRepository.save(owner);
     }
 
-    public void updateItem(Owner owner, Long id){
+    public void updateItem(Owner owner, Long id, String token){
+        tokenValidation(token);
 
         dataValidation(owner.getDni(), owner.getEmail(), owner.getTypeOwner().getId());
         ownerRepository.findById(id).map(owner1 -> {
@@ -59,7 +74,9 @@ public class OwnerService {
         );
     }
 
-    public void removeItem(Long id){
+    public void removeItem(Long id, String token){
+        tokenValidation(token);
+
         Owner foundOwner = ownerRepository.findById(id).orElseThrow(()->
                 new ResourceNotFoundException(String.format("Propietario con el ID %s no encontrada", id))
         );

@@ -17,30 +17,30 @@ public class LocationController {
     private LocationService locationService;
 
     @GetMapping
-    public List<Location> getAllLocations(){
-        return locationService.getAllItems();
+    public List<Location> getAllLocations(@RequestHeader(value = "Authorization") String token){
+        return locationService.getAllItems(token);
     }
 
     @GetMapping("/shelf/{id}")
-    public List<Location> getItemsByShelfId(@PathVariable(value = "id") Long id){
-        return locationService.getItemsByForeignId(id);
+    public List<Location> getItemsByShelfId(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        return locationService.getItemsByForeignId(id, token);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addLocation(@Valid @RequestBody Location location){
-        locationService.addItem(location);
+    public ResponseEntity<Void> addLocation(@Valid @RequestBody Location location, @RequestHeader(value = "Authorization") String token){
+        locationService.addItem(location, token);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLocation(@Valid @RequestBody Location location, @PathVariable(value = "id") Long id){
-        locationService.updateItem(location, id);
+    public ResponseEntity<Void> updateLocation(@Valid @RequestBody Location location, @PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        locationService.updateItem(location, id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLocation(@PathVariable(value = "id") Long id){
-        locationService.removeItem(id);
+    public ResponseEntity<Void> deleteLocation(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        locationService.removeItem(id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 

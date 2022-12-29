@@ -1,7 +1,9 @@
 package com.mauricio.inventory.location;
 
+import com.mauricio.inventory.auth.JWTUtil;
 import com.mauricio.inventory.exceptions.BadRequestException;
 import com.mauricio.inventory.exceptions.ResourceNotFoundException;
+import com.mauricio.inventory.exceptions.UnauthorizedRequestException;
 import com.mauricio.inventory.shelf.Shelf;
 import com.mauricio.inventory.shelf.ShelfRepository;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,14 @@ public class LocationService {
 
     private LocationRepository locationRepository;
     private ShelfRepository shelfRepository;
+    private final JWTUtil jwtUtil;
+    private String tokenValidation(String token){
+        String employeeId = jwtUtil.getKey(token);
+        if(employeeId == null || employeeId.equals("")){
+            throw new UnauthorizedRequestException("Sin Autorización");
+        }
+        return jwtUtil.getValue(token);
+    }
 
     public void dataValidation(Location location){
         Optional<Shelf> shelf = shelfRepository.findById(location.getShelf().getId());
@@ -34,11 +44,14 @@ public class LocationService {
         }
     }
 
-    public List<Location> getAllItems(){
+    public List<Location> getAllItems(String token){
+        tokenValidation(token);
         return locationRepository.findAll();
     }
 
-    public List<Location> getItemsByForeignId(Long shelfId){
+    public List<Location> getItemsByForeignId(Long shelfId, String token){
+        tokenValidation(token);
+
         Optional<Shelf> foundShelf = shelfRepository.findById(shelfId);
         if (foundShelf.isPresent() && !foundShelf.get().getLocations().isEmpty()){
             return foundShelf.get().getLocations();
@@ -46,8 +59,10 @@ public class LocationService {
         return new ArrayList<>();
     }
 
-    public void addItem(Location location){
-        this.dataValidation(location);
+    public void addItem(Location location, String token){
+        tokenValidation(token);
+
+        dataValidation(location);
         try {
             locationRepository.save(location);
         }catch (DataIntegrityViolationException exception){
@@ -56,7 +71,9 @@ public class LocationService {
 
     }
 
-    public void updateItem(Location location, Long id){
+    public void updateItem(Location location, Long id, String token){
+        tokenValidation(token);
+
         dataValidation(location);
         locationRepository.findById(id).map(loc -> {
            loc.setRow(location.getRow());
@@ -68,7 +85,9 @@ public class LocationService {
         );
     }
 
-    public void removeItem(Long id){
+    public void removeItem(Long id, String token){
+        tokenValidation(token);
+
         Optional<Location> foundLocation = locationRepository.findById(id);
         if (foundLocation.isEmpty()){
             throw new ResourceNotFoundException(String.format("Ubicación con el ID %s no encontrado", id));

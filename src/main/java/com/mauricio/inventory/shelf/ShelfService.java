@@ -1,7 +1,9 @@
 package com.mauricio.inventory.shelf;
 
+import com.mauricio.inventory.auth.JWTUtil;
 import com.mauricio.inventory.exceptions.BadRequestException;
 import com.mauricio.inventory.exceptions.ResourceNotFoundException;
+import com.mauricio.inventory.exceptions.UnauthorizedRequestException;
 import com.mauricio.inventory.location.Location;
 import com.mauricio.inventory.location.LocationRepository;
 import lombok.AllArgsConstructor;
@@ -16,17 +18,30 @@ public class ShelfService {
 
     private ShelfRepository shelfRepository;
     private LocationRepository locationRepository;
+    private final JWTUtil jwtUtil;
+    private String tokenValidation(String token){
+        String employeeId = jwtUtil.getKey(token);
+        if(employeeId == null || employeeId.equals("")){
+            throw new UnauthorizedRequestException("Sin Autorización");
+        }
+        return jwtUtil.getValue(token);
+    }
 
-    public List<Shelf> getAllItems(){
+    public List<Shelf> getAllItems(String token){
+        tokenValidation(token);
         return shelfRepository.findAll();
     }
 
-    public Shelf getShelfByLocationId(Long id){
+    public Shelf getShelfByLocationId(Long id, String token){
+        tokenValidation(token);
+
         Optional<Location> foundLocation = locationRepository.findById(id);
         return foundLocation.map(Location::getShelf).orElse(null);
     }
 
-    public void addItem(Shelf shelf){
+    public void addItem(Shelf shelf, String token){
+        tokenValidation(token);
+
         String name = shelf.getName();
         if(shelfRepository.existsNameOrSerial(name, shelf.getSerial())){
             throw new BadRequestException(String.format("El nombre {%s} ya existe",name));
@@ -34,7 +49,9 @@ public class ShelfService {
         shelfRepository.save(shelf);
     }
 
-    public void updateItem(Shelf shelf, Long id){
+    public void updateItem(Shelf shelf, Long id, String token){
+        tokenValidation(token);
+
         String name = shelf.getName();
         if(shelfRepository.existsNameOrSerial(name, shelf.getSerial())){
             throw new BadRequestException(String.format("El nombre {%s} ya existe",name));
@@ -49,7 +66,9 @@ public class ShelfService {
         );
     }
 
-    public void removeItem(Long id){
+    public void removeItem(Long id, String token){
+        tokenValidation(token);
+
         Optional<Shelf> foundShelf = shelfRepository.findById(id);
         if (foundShelf.isEmpty()){
             throw new ResourceNotFoundException(String.format("Estante con el ID %s no encontrado", id));

@@ -20,35 +20,35 @@ public class EquipmentController {
     private EquipmentService equipmentService;
 
     @GetMapping
-    public List<Equipment> getAllEquipments( ){
-        return equipmentService.getAllItems( );
+    public List<Equipment> getAllEquipments(@RequestHeader(value = "Authorization") String token){
+        return equipmentService.getAllItems(token);
     }
 
     @GetMapping("/view")
-    public List<CompletedEquipment> getAllCompletedEquipments(){
-        return equipmentService.getAllCompletedEquipments();
+    public Page<CompletedEquipment> getAllCompletedEquipments(@RequestHeader(value = "Authorization") String token, Pageable page){
+        return equipmentService.getAllCompletedEquipments(token, page);
     }
 
     @GetMapping("/{id}")
-    public Equipment getEquipment(@PathVariable(value = "id") Long id){
-        return equipmentService.getItem(id);
+    public Equipment getEquipment(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        return equipmentService.getItem(id, token);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addEquipment(@Valid @RequestBody Equipment equipment){
-        equipmentService.addItem(equipment);
+    public ResponseEntity<Void> addEquipment(@Valid @RequestBody Equipment equipment, @RequestHeader(value = "Authorization") String token){
+        equipmentService.addItem(equipment, token);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateEquipment(@Valid @RequestBody Equipment equipment, @PathVariable(value = "id") Long id){
-        equipmentService.updateItem(equipment, id);
+    public ResponseEntity<Void> updateEquipment(@Valid @RequestBody Equipment equipment, @PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        equipmentService.updateItem(equipment, id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEquipment(@PathVariable(value = "id") Long id){
-        equipmentService.removeItem(id);
+    public ResponseEntity<Void> deleteEquipment(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        equipmentService.removeItem(id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

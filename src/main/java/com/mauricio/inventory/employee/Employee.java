@@ -38,20 +38,22 @@ public class Employee extends AuditModel{
             name = "id"
     )
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Nombre requerido!")
     @Size(max = 80)
     @Column(nullable = false)
     private String name;
     @Size(max = 80)
     private String lastName;
     @Email
+    @NotBlank(message = "Email requerido!")
     @Column(nullable = false, unique = true)
     private String email;
-    @NotNull
+    @NotNull(message = "Estado requerido!")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
 
+    @NotBlank(message = "Contraseña requerida!")
     @Column(nullable = false, unique = true)
     private String password;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

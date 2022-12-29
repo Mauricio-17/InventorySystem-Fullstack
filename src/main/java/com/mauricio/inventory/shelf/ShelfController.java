@@ -17,30 +17,30 @@ public class ShelfController {
     private ShelfService shelfService;
 
     @GetMapping
-    public List<Shelf> getAllShelves(){
-        return shelfService.getAllItems();
+    public List<Shelf> getAllShelves(@RequestHeader(value = "Authorization") String token){
+        return shelfService.getAllItems(token);
     }
 
     @GetMapping("/location/{id}")
-    public Shelf getShelfByLocationId(@PathVariable(value = "id") Long locationId){
-        return shelfService.getShelfByLocationId(locationId);
+    public Shelf getShelfByLocationId(@PathVariable(value = "id") Long locationId, @RequestHeader(value = "Authorization") String token){
+        return shelfService.getShelfByLocationId(locationId, token);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addShelf(@Valid @RequestBody Shelf shelf){
-        shelfService.addItem(shelf);
+    public ResponseEntity<Void> addShelf(@Valid @RequestBody Shelf shelf, @RequestHeader(value = "Authorization") String token){
+        shelfService.addItem(shelf, token);
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateShelf(@Valid @RequestBody Shelf shelf, @PathVariable(value = "id") Long id){
-        shelfService.updateItem(shelf, id);
+    public ResponseEntity<Void> updateShelf(@Valid @RequestBody Shelf shelf, @PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        shelfService.updateItem(shelf, id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteShelf(@PathVariable(value = "id") Long id){
-        shelfService.removeItem(id);
+    public ResponseEntity<Void> deleteShelf(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+        shelfService.removeItem(id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

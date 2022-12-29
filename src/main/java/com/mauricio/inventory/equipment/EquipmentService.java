@@ -1,11 +1,13 @@
 package com.mauricio.inventory.equipment;
 
+import com.mauricio.inventory.auth.JWTUtil;
 import com.mauricio.inventory.brand.Brand;
 import com.mauricio.inventory.brand.BrandRepository;
 import com.mauricio.inventory.category.Category;
 import com.mauricio.inventory.category.CategoryRepository;
 import com.mauricio.inventory.exceptions.BadRequestException;
 import com.mauricio.inventory.exceptions.ResourceNotFoundException;
+import com.mauricio.inventory.exceptions.UnauthorizedRequestException;
 import com.mauricio.inventory.location.Location;
 import com.mauricio.inventory.location.LocationRepository;
 import com.mauricio.inventory.location.Status;
@@ -14,6 +16,8 @@ import com.mauricio.inventory.owner.OwnerRepository;
 import com.mauricio.inventory.views.CompletedEquipment;
 import com.mauricio.inventory.views.CompletedEquipmentRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +33,16 @@ public class EquipmentService {
     private BrandRepository brandRepository;
     private LocationRepository locationRepository;
     private CompletedEquipmentRepository completedEquipmentRepository;
+    private final JWTUtil jwtUtil;
+    private String tokenValidation(String token){
+        String employeeId = jwtUtil.getKey(token);
+        System.out.println(jwtUtil.getValue(token));
+        System.out.println(employeeId);
+        if(employeeId == null || employeeId.equals("")){
+            throw new UnauthorizedRequestException("Sin Autorización");
+        }
+        return jwtUtil.getValue(token);
+    }
 
     /*public void foreignDataValidation
             (JpaRepository category, JpaRepository owner, JpaRepository brand, JpaRepository location, Long id){
@@ -64,14 +78,18 @@ public class EquipmentService {
         }
     }
 
-    public List<Equipment> getAllItems( ){
+    public List<Equipment> getAllItems(String token){
+        tokenValidation(token);
         return equipmentRepository.findAll( );
     }
 
-    public List<CompletedEquipment> getAllCompletedEquipments(){
-        return completedEquipmentRepository.findAll();
+    public Page<CompletedEquipment> getAllCompletedEquipments(String token, Pageable page){
+        tokenValidation(token);
+        return completedEquipmentRepository.findAll(page);
     }
-    public Equipment getItem(Long id){
+    public Equipment getItem(Long id, String token){
+        tokenValidation(token);
+
         Optional<Equipment> foundEquipment = equipmentRepository.findById(id);
         if(foundEquipment.isEmpty()){
             return null;
@@ -79,12 +97,16 @@ public class EquipmentService {
         return foundEquipment.get();
     }
 
-    public void addItem(Equipment equipment){
+    public void addItem(Equipment equipment, String token){
+        tokenValidation(token);
+
         dataValidation(equipment);
         equipmentRepository.save(equipment);
     }
 
-    public void updateItem(Equipment equipment, Long id){
+    public void updateItem(Equipment equipment, Long id, String token){
+        tokenValidation(token);
+
         dataValidation(equipment);
         equipmentRepository.findById(id).map(eq -> {
             eq.setName(equipment.getName());
@@ -101,7 +123,9 @@ public class EquipmentService {
         );
     }
 
-    public void removeItem(Long id){
+    public void removeItem(Long id, String token){
+        tokenValidation(token);
+
         Optional<Equipment> foundEquipment = equipmentRepository.findById(id);
         if( !foundEquipment.isPresent()){
             throw new ResourceNotFoundException(String.format("Equipo con el ID %s no encontrada", id));
