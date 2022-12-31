@@ -36,7 +36,7 @@ public class Owner extends AuditModel{
             name = "id"
     )
     private Long id;
-    @NotBlank
+    @NotBlank(message = "El campo NOMBRE no debe estar vacio")
     @Size(max = 80)
     @Column(nullable = false)
     private String name;
@@ -44,10 +44,12 @@ public class Owner extends AuditModel{
     private String lastName;
     @Size(max = 15)
     private String cellphoneNumber;
+    @NotBlank(message = "El campo EMAIL no debe estar vacio")
     @Email
     @Column(nullable = false, unique = true)
     private String email;
-    @NotBlank
+
+    @NotBlank(message = "El campo DNI no debe estar vacio")
     @Size(max = 10)
     @Column(nullable = false, unique = true)
     private String dni;

@@ -52,6 +52,7 @@ const submitObject = async () => {
     try {
         let result = await addNewCategory(item);
         successNotification("Registro exitoso", `La categoría ${item.name.toUpperCase()} ha sido registrado.`);
+        emit('update-list');
     } catch (e) {
         if (e.response) {
             const data = await e.response.json();
@@ -64,7 +65,6 @@ const submitObject = async () => {
     } finally {
         hideDrawer();
         cleanObject();
-        emit('update-list');
     }
 
 };
@@ -74,7 +74,7 @@ const editObject = async () => {
         const result = await updateCategory(item, objectToUpdate.value.id);
         successNotification("Edición exitosa", `Se actualizaron los datos de ${item.name.toUpperCase()}.`);
         cleanObject();
-
+        emit('update-list');
     } catch (e) {
         if (e.response) {
             const data = await e.response.json();
@@ -86,7 +86,6 @@ const editObject = async () => {
         }
     } finally {
         hideDrawer();
-        emit('update-list');
     }
 };
 

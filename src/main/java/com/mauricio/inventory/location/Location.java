@@ -32,6 +32,7 @@ public class Location {
     private Long id;
 
     //@NotBlank  it's unable to use with Byte
+    @NotNull(message = "El campo Fila no debe estar vacio")
     @Column(name = "shelf_row", nullable = false)
     private Byte row;
     @NotNull

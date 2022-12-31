@@ -51,10 +51,16 @@ public class LocationService {
 
     public List<Location> getItemsByForeignId(Long shelfId, String token){
         tokenValidation(token);
-
+        List<Location> availableLocations = new ArrayList<>();
         Optional<Shelf> foundShelf = shelfRepository.findById(shelfId);
         if (foundShelf.isPresent() && !foundShelf.get().getLocations().isEmpty()){
-            return foundShelf.get().getLocations();
+            List<Location> locations = foundShelf.get().getLocations();
+            for (Location loc: locations) {
+                if(loc.getStatus() == Status.AVAILABLE){
+                    availableLocations.add(loc);
+                }
+            }
+            return availableLocations;
         }
         return new ArrayList<>();
     }

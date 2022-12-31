@@ -34,5 +34,9 @@ public class CompletedEquipment implements Serializable {
     private Byte shelfRow;
     private String ownerName;
     private String ownerLastName;
+    private Long brandId;
+    private Long categoryId;
+    private Long locationId;
+    private Long ownerId;
 
 }

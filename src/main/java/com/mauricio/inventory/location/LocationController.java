@@ -22,7 +22,7 @@ public class LocationController {
     }
 
     @GetMapping("/shelf/{id}")
-    public List<Location> getItemsByShelfId(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+    public List<Location> getLocationByShelfId(@PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
         return locationService.getItemsByForeignId(id, token);
     }
 

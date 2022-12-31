@@ -59,7 +59,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import {EditOutlined} from '@ant-design/icons-vue';
 import { updateEmployee, addNewEmployee } from '../composables/Employee';
-import {successNotification, errorNotification} from '../composables/Notification'
+import {successNotification, errorNotification} from '../composables/Notification';
 
 const emit = defineEmits(['update-list']);
 
@@ -72,6 +72,23 @@ const props = defineProps({
     areas: { type: Array, required: true },
     roles: { type: Array, required: true }
 });
+
+const validateMessages = {
+    required: '${label} is required!',
+    types: {
+        email: '${label} no es un email válido!',
+        number: '${label} is not a valid number!',
+    },
+    number: {
+        range: '${label} must be between ${min} and ${max}',
+    },
+};
+const translation = {
+  "HABILITADO": "ENABLE",
+  "INHABILITADO": "UNABLE",
+  "INDEFINIDO" : "UNDEFINED",
+  "DESPEDIDO" : "FIRED"
+};
 
 const visible = ref(false);
 
@@ -91,6 +108,51 @@ const object = reactive({
 });
 
 
+const submitObject = async () => {
+    const item = { ...object }; // this is to prevent reactivity
+    try {
+        let result = await addNewEmployee(item);
+        successNotification("Registro exitoso", `El empleado ${item.name.toUpperCase()} ha sido registrado.`);
+        emit('update-list');
+    } catch (e) {
+        if (e.response) {
+            const data = await e.response.json();
+            if (data.errors){
+                errorNotification("Ocurrió un error :(", data.errors[0].defaultMessage);
+                return;
+            }
+            errorNotification("Ocurrió un error al registrar:(", data.message);
+        }
+    } finally {
+        hideDrawer();
+        cleanObject();    
+    }
+};
+
+const editObject = async () => {
+    const item = { ...object }; // this is to prevent reactivity
+    try{
+        const result = await updateEmployee(item, objectToUpdate.value.employeeId);
+        successNotification("Edición exitosa", `Se actualizaron los datos de ${item.name.toUpperCase()}.`);
+        cleanObject();    
+    }
+    catch(e){
+        if (e.response) {
+            const data = await e.response.json();
+            if (data.errors){
+                errorNotification("Ocurrió un error al editar:(", data.errors[0].defaultMessage);
+                return;
+            }
+            errorNotification("Ocurrió un error :(", data.message);
+        }
+    }
+    finally{
+        hideDrawer();
+        emit('update-list');
+    }
+    
+};
+
 const afterVisibleChange = (bool) => {
     console.log('visible', bool);
 };
@@ -99,61 +161,6 @@ const showDrawer = () => {
 };
 const hideDrawer = () => {
     visible.value = false;
-};
-
-const submitObject = async () => {
-    const item = { ...object }; // this is to prevent reactivity
-    try {
-        let result = await addNewEmployee(item);
-        successNotification("Registro exitoso", `El empleado ${item.name.toUpperCase()} ha sido registrado.`);
-    } catch (e) {
-        if (e.response) {
-            const data = await e.response.json();
-            if (data.errors){
-                errorNotification("Ocurrió un error :(", data.errors[0].defaultMessage);
-                return;
-            }
-            errorNotification("Ocurrió un error :(", data.message);
-        }
-    } finally {
-        hideDrawer();
-        cleanObject();    
-        emit('update-list');
-    }
-
-};
-const editObject = async () => {
-    const item = { ...object }; // this is to prevent reactivity
-    try{
-        const result = await updateEmployee(item, objectToUpdate.value.employeeId);
-        successNotification("Edición exitosa", `Se actualizaron los datos de ${item.name.toUpperCase()}.`);
-    }
-    catch(e){
-        if (e.response) {
-            const data = await e.response.json();
-            if (data.errors){
-                errorNotification("Ocurrió un error :(", data.errors[0].defaultMessage);
-                return;
-            }
-            errorNotification("Ocurrió un error :(", data.message);
-        }
-    }
-    finally{
-        hideDrawer();
-        cleanObject();    
-        emit('update-list');
-    }
-    
-};
-const validateMessages = {
-    required: '${label} is required!',
-    types: {
-        email: '${label} no es un email válido!',
-        number: '${label} is not a valid number!',
-    },
-    number: {
-        range: '${label} must be between ${min} and ${max}',
-    },
 };
 const cleanObject = ()=>{
     object.name = '';
@@ -170,7 +177,7 @@ onMounted(
         if (objectToUpdate.value !== null) {
             object.name = objectToUpdate.value.name;
             object.lastName = objectToUpdate.value.lastName;
-            object.status = objectToUpdate.value.status;
+            object.status = translation[objectToUpdate.value.status];
             object.email = objectToUpdate.value.email;
             object.role.id = objectToUpdate.value.roleId;
             object.area.id = objectToUpdate.value.areaId;

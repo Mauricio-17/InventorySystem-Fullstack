@@ -29,11 +29,11 @@ public class Shelf {
     )
     private Long id;
     @Size(max = 20)
-    @NotBlank
+    @NotBlank(message = "El campo SERIAL no debe estar vacio")
     @Column(nullable = false, unique = true)
     private String serial;
     @Size(max = 50)
-    @NotBlank
+    @NotBlank(message = "El campo NOMBRE no debe estar vacio")
     @Column(nullable = false, unique = true)
     private String name;
     @Size(max = 200)

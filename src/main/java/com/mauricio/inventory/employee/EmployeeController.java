@@ -47,7 +47,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateEmployee(@Valid @RequestBody Employee employee, @PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
+    public ResponseEntity<Void> updateEmployee(@RequestBody Employee employee, @PathVariable(value = "id") Long id, @RequestHeader(value = "Authorization") String token){
         employeeService.updateItem(employee, id, token);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }

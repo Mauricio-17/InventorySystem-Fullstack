@@ -26,7 +26,7 @@
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <a-popconfirm v-if="listEmployee.length" :title="'¿Está seguro que quiere eliminar a ' + record.name"
-            @confirm="onDelete(record.employeeId)">
+            @confirm="onDelete(record.employeeId, record.name)">
             <a-radio-button value="large" >
               <delete-outlined />
             </a-radio-button>
@@ -40,18 +40,17 @@
         </template>
       </template>
     </a-table>
-    <a-pagination v-model:current="currentPage" :total="50" show-less-items />
   </div>
 </template>
 
 <script setup>
 import EmployeeFormVue from '../components/EmployeeForm.vue';
-import axios from "axios";
 import { ref, reactive, computed, onMounted } from 'vue';
 import {DeleteOutlined} from '@ant-design/icons-vue';
 import { getAllEmployees, removeEmployee } from '../composables/Employee';
 import { getAllRoles } from '../composables/Role';
 import {getAllAreas} from '../composables/Area';
+import { successNotification, errorNotification } from '../composables/Notification';
 
 const columns = [
   {
@@ -131,26 +130,21 @@ const currentPage = ref(2);
 
 const countEmployee = computed(() => listEmployee.value.length);
 
-const edit = async (id) => {
-  const { data } = await axios.get(`/api/employee/${id}`);
-
-};
-const save = (key) => {
-  Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
-  delete editableData[key];
-};
-
-const onDelete = async (employeeId) => {
+const onDelete = async (employeeId, name) => {
   try {
     const result = await removeEmployee(employeeId);
+    successNotification("Eliminación exitosa!", `El empleado ${name} fue eliminado`);
     await fetchEmployees();
   }
   catch (e) {
     if (e.response) {
       const data = await e.response.json();
-      console.log(data.message);
+      if (data.errors){
+                errorNotification("Ocurrió un error :(", data.errors[0].defaultMessage);
+                return;
+            }
+            errorNotification("Ocurrió un error :(", data.message);
     }
-
   }
 };
 

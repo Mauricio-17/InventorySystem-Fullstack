@@ -1,8 +1,10 @@
 <template>
     <div>
-        <CategoryFormVue 
-        @update-list="fetchCategories"
-        />
+        <a-tag color="blue">Cantidad de Categorias</a-tag>
+        <a-badge :count="countCategory" />
+        <br />
+        <br />
+        <CategoryFormVue @update-list="fetchCategories" />
         <hr>
 
         <a-table bordered :data-source="listCategories" :columns="columns">
@@ -16,16 +18,12 @@
                 </template>
                 <template v-else-if="column.dataIndex === 'actions'">
                     <a-popconfirm v-if="listCategories.length"
-                        :title="'¿Está seguro que quiere eliminar a ' + record.name"
-                        @confirm="onDelete(record.id)">
+                        :title="'¿Está seguro que quiere eliminar a ' + record.name" @confirm="onDelete(record.id, record.name)">
                         <a-radio-button value="large">
                             <delete-outlined />
                         </a-radio-button>
                     </a-popconfirm>
-                    <CategoryFormVue 
-                    @update-list="fetchCategories"
-                    :record="record"
-                    />
+                    <CategoryFormVue @update-list="fetchCategories" :record="record" />
                 </template>
             </template>
         </a-table>
@@ -34,10 +32,10 @@
 </template>
 <script setup>
 import CategoryFormVue from '../components/CategoryForm.vue';
-import { ref, onMounted } from 'vue';
-import {DeleteOutlined} from '@ant-design/icons-vue';
+import { ref, onMounted, computed } from 'vue';
+import { DeleteOutlined } from '@ant-design/icons-vue';
 import { getAllCategories, removeCategory } from '../composables/Category';
-
+import { successNotification, errorNotification } from '../composables/Notification';
 
 const columns = [
     {
@@ -59,28 +57,34 @@ const columns = [
 ];
 
 const listCategories = ref([]);
+const countCategory = computed(() => listCategories.value.length);
 
-const onDelete = async (categoryId) => {
-  try {
-    const result = await removeCategory(categoryId);
-    await fetchCategories();
-  }
-  catch (e) {
-    if (e.response) {
-      const data = await e.response.json();
-      console.log(data.message);
+const onDelete = async (categoryId, name) => {
+    try {
+        const result = await removeCategory(categoryId);
+        successNotification("Eliminación exitosa!", `La categoría ${name} fue eliminada.`);
+        await fetchCategories();
     }
+    catch (e) {
+        if (e.response) {
+            const data = await e.response.json();
+            if (data.errors){
+                errorNotification("Ocurrió un error :(", data.errors[0].defaultMessage);
+                return;
+            }
+            errorNotification("Ocurrió un error :(", data.message);
+        }
 
-  }
+    }
 };
 
-const fetchCategories = async ()=> {
+const fetchCategories = async () => {
     const result = await getAllCategories();
     const data = await result.json();
     listCategories.value = data;
 };
 
-onMounted(async ()=> {
+onMounted(async () => {
     await fetchCategories();
 });
 

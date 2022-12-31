@@ -23,7 +23,7 @@ public class BrandController {
     @PostMapping
     public ResponseEntity<Void> addBrand(@Valid @RequestBody Brand brand,  @RequestHeader(value = "Authorization") String token){
         brandService.addItem(brand, token);
-        return new ResponseEntity<Void>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

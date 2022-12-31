@@ -7,11 +7,7 @@ import router from './router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'ant-design-vue/dist/antd.css';
 
-import { Button, MenuItem, SubMenu, Menu, 
-    Layout, LayoutSider, LayoutHeader, LayoutContent, Breadcrumb, BreadcrumbItem, LayoutFooter
-, Drawer, Form, FormItem, Switch, CheckboxGroup, Checkbox, Radio, RadioGroup, Input, InputPassword, Select, SelectOption,
-Popconfirm, Table, RadioButton,
-Badge, Tag, Pagination, Textarea } from 'ant-design-vue';
+import { Button, MenuItem, SubMenu, Menu, Layout, LayoutSider, LayoutHeader, LayoutContent, Breadcrumb, BreadcrumbItem, LayoutFooter, Drawer, Form, FormItem, Switch, CheckboxGroup, Checkbox, Radio, RadioGroup, Input, InputPassword, Select, SelectOption, Popconfirm, Table, RadioButton, Badge, Tag, Pagination, Textarea, InputNumber } from 'ant-design-vue';
 
 const app = createApp(App);
 
@@ -49,5 +45,6 @@ app.use(Badge);
 app.use(Tag);
 app.use(Pagination);
 app.use(Textarea);
+app.use(InputNumber);
 
 app.mount('#app');

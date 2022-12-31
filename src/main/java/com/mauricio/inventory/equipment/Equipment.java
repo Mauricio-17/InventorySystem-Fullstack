@@ -49,7 +49,7 @@ public class Equipment extends AuditModel {
     private Long id;
 
     @Size(max = 15)
-    @NotBlank
+    @NotBlank(message = "SKU requerido!")
     @Column(nullable = false, unique = true)
     private String sku;
 

@@ -69,10 +69,7 @@ public class EquipmentService {
             throw new BadRequestException("Error en algún dato de categoría, propietario, " +
                     "marca o ubicación.");
         }
-        if(equipmentRepository.existsName(equipment.getName())){
-            throw new BadRequestException("El nombre ya está registrado");
-        }
-        Boolean isAvailable = location.get().getStatus() == Status.AVAILABLE;
+        boolean isAvailable = location.get().getStatus() == Status.AVAILABLE;
         if( !isAvailable){
             throw new BadRequestException("El estante no está disponible");
         }
@@ -91,16 +88,16 @@ public class EquipmentService {
         tokenValidation(token);
 
         Optional<Equipment> foundEquipment = equipmentRepository.findById(id);
-        if(foundEquipment.isEmpty()){
-            return null;
-        }
-        return foundEquipment.get();
+        return foundEquipment.orElse(null);
     }
 
     public void addItem(Equipment equipment, String token){
         tokenValidation(token);
 
         dataValidation(equipment);
+        if(equipmentRepository.existsName(equipment.getName())){
+            throw new BadRequestException("El nombre ya está registrado");
+        }
         equipmentRepository.save(equipment);
     }
 

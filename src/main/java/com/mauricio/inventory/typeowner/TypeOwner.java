@@ -24,7 +24,7 @@ public class TypeOwner {
             name = "id"
     )
     private Long id;
-    @NotBlank
+    @NotBlank(message = "El campo NOMBRE no debe estar vacio")
     @Size(max = 80)
     @Column(nullable = false, unique = true)
     private String name;

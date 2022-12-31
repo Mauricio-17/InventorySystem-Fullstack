@@ -1,5 +1,5 @@
 <template>
-  <a-layout v-if="token">
+  <a-layout>
     <a-layout-header class="header">
       <div class="logo" />
       <a-menu theme="dark" mode="horizontal" :style="{ lineHeight: '64px' }">
@@ -8,7 +8,7 @@
         <a-menu-item key="3">nav 3</a-menu-item>
       </a-menu>
     </a-layout-header>
-    <a-layout style="min-height: 100vh">
+    <a-layout v-if="token" style="min-height: 100vh">
       <a-layout-sider v-model:collapsed="collapsed" collapsible>
         <div class="logo" />
         <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
@@ -101,28 +101,33 @@
         </a-layout-footer>
       </a-layout>
     </a-layout>
+    <div v-else class="mx-auto margin w-50">
+      <a-form :model="formState" name="basic" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" autocomplete="off"
+        :validate-messages="validateMessages" class="">
+
+        <a-form-item label="Email" name="email" :rules="[{ type: 'email' }]">
+          <a-input v-model:value="formState.email" />
+        </a-form-item>
+
+        <a-form-item label="Password" name="password"
+          :rules="[{ required: true, message: 'Porfavor, ingrese su contraseña' }]">
+          <a-input-password v-model:value="formState.password" />
+        </a-form-item>
+
+        <!-- <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
+          <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
+        </a-form-item> -->
+
+        <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+          <a-button type="primary" v-on:click="logIn">Ingresar</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
   </a-layout>
 
-  <a-form v-else 
-  :model="formState" name="basic" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" autocomplete="off"
-    @finish="onFinish" @finishFailed="onFinishFailed">
+  <!-- <RouterView v-else /> -->
 
-    <a-form-item label="Email" name="email" :rules="[{ required: true, message: 'Please input your username!' }]">
-      <a-input v-model:value="formState.email" />
-    </a-form-item>
 
-    <a-form-item label="Password" name="password" :rules="[{ required: true, message: 'Please input your password!' }]">
-      <a-input-password v-model:value="formState.password" />
-    </a-form-item>
-
-    <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
-      <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
-    </a-form-item>
-
-    <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-      <a-button type="primary" html-type="submit">Submit</a-button>
-    </a-form-item>
-  </a-form>
 
 </template>
 
@@ -136,30 +141,62 @@ import {
   FileOutlined,
   UserOutlined
 } from '@ant-design/icons-vue';
-import {login} from './composables/Auth'; 
+import { login } from './composables/Auth';
+import { useRouter } from 'vue-router';
+import { successNotification, errorNotification } from './composables/Notification';
+
+const router = useRouter();
 
 const collapsed = ref(false);
 const selectedKeys = ref(['1']);
-const token = ref(null);
+const token = ref(null); //to check if there's a token or not
+
+const validateMessages = {
+  required: '${label} is required!',
+  types: {
+    email: '${label} no es un email válido!',
+    number: '${label} is not a valid number!',
+  },
+  number: {
+    range: '${label} must be between ${min} and ${max}',
+  },
+};
 
 const formState = reactive({
   email: '',
   password: '',
-  remember: true,
+  remember: false,
 });
 
-const onFinish = async (values) => {
-  const user = {...formState};
-  const result = await login(user);
-  const data = await result.text();
-  localStorage.setItem('token', data);
-  localStorage.setItem('email', user.email);
-  console.log('Success:', values);
+const logIn = async () => {
+  const user = { ...formState };
+  try {
+    const result = await login(user);
+    const data = await result.text();
+    localStorage.setItem('token', data);
+    localStorage.setItem('email', user.email);
+    token.value = localStorage.getItem('token');
+    router.push({ name: 'equipment' });
+    clearLogin();
+  }
+  catch (e) {
+    if (e.response) {
+      const data = await e.response.json();
+      if (data.errors) {
+        errorNotification("Ocurrió un error :(", data.errors[0].defaultMessage);
+        return;
+      }
+      errorNotification("Ocurrió un error al iniciar sesión :(", data.message);
+    }
+  }
+
 };
 
-const onFinishFailed = (errorInfo) => {
-  console.log('Failed:', errorInfo);
-};
+const clearLogin = () => {
+  formState.email = '';
+  formState.password = '';
+  formState.remember = false;
+}
 
 onMounted(() => {
   token.value = localStorage.getItem('token');
@@ -184,3 +221,8 @@ onMounted(() => {
 }
 </style>
 
+<style scoped>
+.margin {
+  margin-top: 16px;
+}
+</style>
