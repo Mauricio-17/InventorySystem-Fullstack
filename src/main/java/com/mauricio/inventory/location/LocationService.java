@@ -22,6 +22,18 @@ public class LocationService {
     private LocationRepository locationRepository;
     private ShelfRepository shelfRepository;
     private final JWTUtil jwtUtil;
+
+    public List<Location> getLocationsByShelfId(Long shelfId){
+        List<Location> locations = locationRepository.findAll();
+        List<Location> foundLocations = new ArrayList<>();
+        for(Location loc: locations){
+            if(loc.getId() == shelfId){
+                foundLocations.add(loc);
+            }
+        }
+        return foundLocations;
+    }
+
     private String tokenValidation(String token){
         String employeeId = jwtUtil.getKey(token);
         if(employeeId == null || employeeId.equals("")){
@@ -36,12 +48,25 @@ public class LocationService {
             throw new BadRequestException("Dato del Rol inválido");
         }
         // this is for validating that a row doesn't encounter at the same shelf
-        List<Location> foundLocations = shelf.get().getLocations();
-        for (Location loc: foundLocations) {
-            if(Objects.equals(loc.getRow(), location.getRow())){
-                throw new BadRequestException("La fila ya se encuentra registrada en el estante "+ shelf.get().getName());
+        List<Location> locations = locationRepository.findAll();
+        if( !locations.isEmpty()){
+            List<Location> foundLocations = new ArrayList<>();
+            Long shelfId = shelf.get().getId();
+            // filtering by shelfId
+            for(Location loc: locations){
+                Long foundShelfId = loc.getShelf().getId();
+                if(Objects.equals(foundShelfId, shelfId)){
+                    if(Objects.equals(loc.getRow(), location.getRow())){
+                        if(Objects.equals(location.getId(), loc.getId())){
+                            return;
+                        }
+                        throw new BadRequestException("La fila ya se encuentra registrada en el estante "+ shelf.get().getName());
+                    }
+                    foundLocations.add(loc);
+                }
             }
         }
+
     }
 
     public List<Location> getAllItems(String token){
@@ -53,10 +78,11 @@ public class LocationService {
         tokenValidation(token);
         List<Location> availableLocations = new ArrayList<>();
         Optional<Shelf> foundShelf = shelfRepository.findById(shelfId);
-        if (foundShelf.isPresent() && !foundShelf.get().getLocations().isEmpty()){
-            List<Location> locations = foundShelf.get().getLocations();
-            for (Location loc: locations) {
-                if(loc.getStatus() == Status.AVAILABLE){
+
+        if (foundShelf.isPresent()){
+            List<Location> locations = locationRepository.findAll();
+            for(Location loc: locations){
+                if(Objects.equals(loc.getShelf().getId(), shelfId) && loc.getStatus() == Status.AVAILABLE){
                     availableLocations.add(loc);
                 }
             }
@@ -79,7 +105,7 @@ public class LocationService {
 
     public void updateItem(Location location, Long id, String token){
         tokenValidation(token);
-
+        System.out.println(location);
         dataValidation(location);
         locationRepository.findById(id).map(loc -> {
            loc.setRow(location.getRow());

@@ -54,10 +54,10 @@ public class Owner extends AuditModel{
     @Column(nullable = false, unique = true)
     private String dni;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne
     @JoinColumn(name = "type_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private TypeOwner typeOwner;
     @OneToMany(
             mappedBy = "owner",

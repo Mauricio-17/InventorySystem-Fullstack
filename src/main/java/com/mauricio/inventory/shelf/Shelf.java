@@ -3,7 +3,9 @@ package com.mauricio.inventory.shelf;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mauricio.inventory.location.Location;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -18,6 +20,8 @@ import static javax.persistence.GenerationType.SEQUENCE;
 @Table(name = "shelf")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Shelf {
 
     @Id
@@ -38,43 +42,12 @@ public class Shelf {
     private String name;
     @Size(max = 200)
     private String description;
-    @OneToMany(
+    /*@OneToMany(
             cascade = CascadeType.ALL,
             mappedBy = "shelf"
     )
     //@JsonManagedReference
-    private List<Location> locations = new ArrayList<>();
+    private List<Location> locations = new ArrayList<>();*/
 
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getSerial() {
-        return serial;
-    }
-
-    public void setSerial(String serial) {
-        this.serial = serial;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<Location> getLocations() {
-        return locations;
-    }
 }

@@ -120,13 +120,11 @@ const translation = {
   "FIRED" : "DESPEDIDO"
 };
 
-const editableData = reactive({});
 
 const roleList = ref([]);
 const areaList = ref([]);
 const listEmployee = ref([]);
 
-const currentPage = ref(2);
 
 const countEmployee = computed(() => listEmployee.value.length);
 

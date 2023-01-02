@@ -37,14 +37,19 @@
                 Equipamento
               </RouterLink>
             </a-menu-item>
+            <a-menu-item key="13">
+              <RouterLink active-class="active" to="/brand">
+                Marca
+              </RouterLink>
+            </a-menu-item>
             <a-menu-item key="5">
               <RouterLink active-class="active" to="/shelf">
                 Estante
               </RouterLink>
             </a-menu-item>
-            <a-menu-item key="6">
-              <RouterLink active-class="active" to="/transaction">
-                Transacciones
+            <a-menu-item key="14">
+              <RouterLink active-class="active" to="/location">
+                Ubicación
               </RouterLink>
             </a-menu-item>
           </a-sub-menu>
@@ -63,6 +68,11 @@
             </a-menu-item>
             <a-menu-item key="9">
               <RouterLink active-class="active" to="/employee">Empleado</RouterLink>
+            </a-menu-item>
+            <a-menu-item key="6">
+              <RouterLink active-class="active" to="/transaction">
+                Transacciones
+              </RouterLink>
             </a-menu-item>
           </a-sub-menu>
           <a-sub-menu key="sub3">

@@ -2,10 +2,7 @@ package com.mauricio.inventory.location;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.mauricio.inventory.shelf.Shelf;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -16,6 +13,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "location")
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -42,7 +40,7 @@ public class Location {
 
     @ManyToOne
     @JoinColumn(name = "shelf_id")
-    @JsonBackReference
+    //@JsonBackReference
     private Shelf shelf;
 
 

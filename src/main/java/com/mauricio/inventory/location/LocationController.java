@@ -26,6 +26,7 @@ public class LocationController {
         return locationService.getItemsByForeignId(id, token);
     }
 
+
     @PostMapping
     public ResponseEntity<Void> addLocation(@Valid @RequestBody Location location, @RequestHeader(value = "Authorization") String token){
         locationService.addItem(location, token);

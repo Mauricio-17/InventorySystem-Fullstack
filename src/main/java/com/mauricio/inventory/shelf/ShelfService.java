@@ -53,9 +53,9 @@ public class ShelfService {
         tokenValidation(token);
 
         String name = shelf.getName();
-        if(shelfRepository.existsNameOrSerial(name, shelf.getSerial())){
-            throw new BadRequestException(String.format("El nombre {%s} ya existe",name));
-        }
+        //if(shelfRepository.existsNameOrSerial(name, shelf.getSerial())){
+        //    throw new BadRequestException(String.format("El nombre %s ya existe",name));
+        //}
         shelfRepository.findById(id).map(shelf1 -> {
             shelf1.setName(shelf.getName());
             shelf1.setDescription(shelf.getDescription());

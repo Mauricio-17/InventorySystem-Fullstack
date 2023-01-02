@@ -15,4 +15,5 @@ public interface ShelfRepository extends JpaRepository<Shelf, Long> {
     )
     Boolean existsNameOrSerial(String name, String serial);
 
+    Shelf findByNameAndSerial(String name, String serial);
 }
