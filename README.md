@@ -5,6 +5,8 @@ This project consists of managing the inventory data of a telecommunications-rel
 
 It's already deployed on AWS, so you can give it a try by using the following link / Ya está desplegado en AWS por lo que puede probar el sistema usando el siguiente enlace:
 http://inventorysystem-env.eba-t6queppy.sa-east-1.elasticbeanstalk.com/
+email: mau.solis5t@gmail.com
+password: oneplus5t
 
 ## Entitad Relación
 ![Entity Relationship](./entity_relationship.png)
