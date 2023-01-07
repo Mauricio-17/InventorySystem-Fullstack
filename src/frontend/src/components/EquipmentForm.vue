@@ -6,14 +6,14 @@
 
     <a-drawer v-model:visible="visible" class="custom-class" style="color: red" title="Equipo" placement="right"
         @after-visible-change="afterVisibleChange">
-        {{ availableLocations }}
         <a-form :model="object" name="basic" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" autocomplete="off"
             :validate-messages="validateMessages">
             <a-form-item label="NOMBRE" name="name"
                 :rules="[{ required: true, message: 'Porfavor, ingrese el nombre' }]">
                 <a-input v-model:value="object.name" />
             </a-form-item>
-            <a-form-item label="SKU" name="sku">
+            <a-form-item label="SKU" name="sku"
+            :rules="[{ required: true, message: 'Porfavor, ingrese el SKU' }]">
                 <a-input v-model:value="object.sku" />
             </a-form-item>
             <a-form-item label="STOCK" name="stock">

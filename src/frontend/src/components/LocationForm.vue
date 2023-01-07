@@ -6,7 +6,7 @@
 
     <a-drawer v-model:visible="visible" class="custom-class" style="color: red" title="EMPLEADO" placement="right"
         @after-visible-change="afterVisibleChange">
-        {{ object }}
+
         <a-form :model="object" name="basic" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" autocomplete="off"
             :validate-messages="validateMessages">
             <a-form-item label="FILA" name="row"
@@ -61,6 +61,10 @@ const validateMessages = {
     number: {
         range: '${label} must be between ${min} and ${max}',
     },
+};
+const translation = {
+  "DISPONIBLE": "AVAILABLE",
+  "INDISPONIBLE": "UNAVAILABLE"
 };
 
 const visible = ref(false);
@@ -141,7 +145,7 @@ onMounted(
     async () => {
         if (objectToUpdate.value !== null) {
             object.row = objectToUpdate.value.row;
-            object.status = objectToUpdate.value.status;
+            object.status = translation[objectToUpdate.value.status];
             object.shelf.id = objectToUpdate.value.shelf.id;
         }
     }
