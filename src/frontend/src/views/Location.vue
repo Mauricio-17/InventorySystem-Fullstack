@@ -6,7 +6,6 @@
     <br />
     <LocationFormVue :shelves="shelfList"  @update-list="fetchLocations" />
     <hr>
-    {{ locationList }}
     <a-table bordered :data-source="locationList" :columns="columns" >
       <template #bodyCell="{ column, text, record }">
         <template v-if="column.dataIndex === 'name'">
@@ -17,7 +16,7 @@
           </div>
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
-          <a-popconfirm v-if="locationList.length" :title="'¿Está seguro que quiere eliminar a ' + record.name"
+          <a-popconfirm v-if="locationList.length" :title="'¿Está seguro que quiere eliminar a la fila ' + record.row"
             @confirm="onDelete(record.id, record.row)">
             <a-radio-button value="large">
               <delete-outlined />
@@ -62,6 +61,10 @@ const columns = [
     width: 150
   },
 ];
+const translation = {
+  "AVAILABLE": "DISPONIBLE",
+  "UNAVAILABLE": "INDISPONIBLE"
+};
 
 const shelfList = ref([]);
 const locationList = ref([]);
@@ -91,6 +94,7 @@ const fetchLocations = async () => {
   const data = await result.json();
   locationList.value = data.map(item => {
     item["nameShelf"] = item.shelf.name;
+    item.status = translation[item.status];
     return item;
   });
 }
