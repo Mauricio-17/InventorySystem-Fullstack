@@ -10,7 +10,7 @@ env:
   MYSQL_VERSION: 8.0.31
   MYSQL_DB: inventory
   MYSQL_USER: root
-  MYSQL_PASSWORD: 1q2w3e4r5t
+  MYSQL_ROOT_PASSWORD: 1q2w3e4r5t
   JAVA_VERSION: 1.17
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
         env:
           MYSQL_DB: ${{ env.MYSQL_DB }}
           MYSQL_USER: ${{ env.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
         ports:
           - 3306:3306
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
